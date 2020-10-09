@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Paint</title>
+    <style>
+        body{
+            margin: 0; padding: 0;
+        }
+        #area{
+            position: relative;
+            left:40px;
+            top:50px;
+            cursor: url(eye-dropper.png) 9 22, crosshair;            
+        }
+    </style>
+</head>
+<body>
+    <button id="erase">eraser</button>
+    <button id="clear">clear</button>
+    <button id="pen">pen</button>
+    <input id="color" type="color">
+    <input id="width" type="range" value="1" min="1" max="10">
+    <br>
+    <canvas id="area" width="600" height="500" style="border:1px solid"></canvas>
+
+
+    <script>
+        window.onload = function(){
+            var canvas = document.getElementById("area");
+            var context = canvas.getContext("2d");
+
+            //init
+            var txt = null;
+            var mouseX = 0;
+            var mouseY = 0;
+            context.strokeStyle = 'black'; // initial brush color
+            context.lineWidth = 1; // initial brush width
+            var isDrawing = false;
+            // var boundings = canvas.getBoundingClientRect();
+            // console.log(boundings)
+
+            function setMouseCoordinates(event) {
+                // mouseX = event.clientX - boundings.left;
+                // mouseY = event.clientY - boundings.top;
+                mouseX = event.offsetX;
+                mouseY = event.offsetY;
+            }
+
+            canvas.addEventListener('mousedown', function(event) {
+                setMouseCoordinates(event);
+                isDrawing = true;
+
+                // Start Drawing
+                context.beginPath();
+                context.moveTo(mouseX, mouseY);
+            });
+            canvas.addEventListener('mousemove', function(event) {
+                setMouseCoordinates(event);
+                // drawInput(event);
+                if(isDrawing){
+                    context.lineTo(mouseX, mouseY);
+                    context.stroke();
+                }
+            });
+            canvas.addEventListener('mouseup', function(event) {
+                setMouseCoordinates(event);
+                isDrawing = false;
+            });
+            document.getElementById("erase").addEventListener("click",function(){
+                canvas.style.cursor = "crosshair"
+                context.strokeStyle = "white"
+                context.lineWidth = document.getElementById("width").value || "1"
+            })
+            document.getElementById("pen").addEventListener("click",function(){
+                canvas.style.cursor = "url(eye-dropper.png) 9 22, crosshair";
+                context.strokeStyle = document.getElementById("color").value || 'black'
+                context.lineWidth = document.getElementById("width").value || "1"
+            })
+            document.getElementById("clear").addEventListener("click",function(){
+                context.clearRect(0,0, canvas.width, canvas.height)
+            })
+            document.getElementById("color").addEventListener("change",function(){                
+                context.strokeStyle = this.value
+            })
+            document.getElementById("width").addEventListener("change",function(){                
+                context.lineWidth = this.value
+            })
+            
+            
+        }
+
+    </script>
+</body>
+</html>
